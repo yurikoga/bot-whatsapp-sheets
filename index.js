@@ -22,7 +22,9 @@ async function iniciarBot() {
         const { connection, qr, lastDisconnect } = update;
         if (qr) {
             console.log("\n--- ESCANEIE O QR CODE ABAIXO COM SEU WHATSAPP ---");
-            qrcode.generate(qr, { small: true });
+            // Substitua o qrcode.generate por isso aqui:
+            const urlQR = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`;
+            console.log('\n=============================================');
         }
         if (connection === 'close') {
             console.log('Conexão fechada. Tentando reconectar...');
@@ -41,19 +43,19 @@ async function iniciarBot() {
     sock.ev.on('messages.upsert', async (m) => {
         const msg = m.messages[0];
         if (!msg.message) return; // Ignora se não houver conteúdo na mensagem
-        
+
         console.log("ID da conversa atual:", msg.key.remoteJid);
         // --- CONFIGURAÇÃO DOS FILTROS DE SEGURANÇA ---
-        
+
         // 1. Substitua pelo ID do seu grupo (veja no passo abaixo como descobrir esse ID)
-        const ID_DO_GRUPO_CORRETO = "120363369555727056@g.us"; 
-        
+        const ID_DO_GRUPO_CORRETO = "120363369555727056@g.us";
+
         // 2. Substitua pelo SEU número de telefone (com o código do país e DDD. Ex: "5511999998888")
-        const SEU_NUMERO_WHATSAPP = "5511978894159"; 
+        const SEU_NUMERO_WHATSAPP = "5511978894159";
 
         // Captura de onde veio a mensagem (ID do grupo ou da conversa)
         const idDaConversa = msg.key.remoteJid;
-        
+
         // Captura quem enviou a mensagem (lidando com grupos ou chat privado)
         const quemEnviou = msg.key.participant || msg.key.fromMe ? sock.user.id.split(':')[0] : msg.key.remoteJid.split('@')[0];
         // Limpa o formato do número para pegar só os dígitos
@@ -62,7 +64,7 @@ async function iniciarBot() {
         // --- APLICANDO OS FILTROS ---
         // Se NÃO for no grupo correto OU NÃO for você quem enviou, o bot ignora e para aqui!
         if (idDaConversa !== ID_DO_GRUPO_CORRETO || numeroLimpo !== SEU_NUMERO_WHATSAPP) {
-            return; 
+            return;
         }
 
         // --- SE PASSOU PELOS FILTROS, O CÓDIGO CONTINUA ABAIXO ---
@@ -82,19 +84,19 @@ async function iniciarBot() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ acao: acao, local: local })
                 });
-                
+
                 const resultado = await response.json();
-                
-/*                 if (resultado.status === "sucesso") {
-                    await sock.sendMessage(idDaConversa, { text: `✅ Registrado!\nAção: ${acao}\nLocal: ${local}` });
-                } */
+
+                /*                 if (resultado.status === "sucesso") {
+                                    await sock.sendMessage(idDaConversa, { text: `✅ Registrado!\nAção: ${acao}\nLocal: ${local}` });
+                                } */
             } catch (erro) {
                 console.error("Erro ao enviar webhook:", erro);
             }
         }
     });
 
-// ... (mantenha o restante do código igual)
+    // ... (mantenha o restante do código igual)
 }
 
 iniciarBot();
