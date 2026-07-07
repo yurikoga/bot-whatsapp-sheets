@@ -1,3 +1,7 @@
+// Linha para enganar o Render no plano grátis:
+require('http').createServer((req, res) => res.end('Bot Online!')).listen(process.env.PORT || 3000);
+
+// ... (o resto do seu código com o const { default: makeWASocket... continua igual abaixo)
 const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode-terminal');
 
